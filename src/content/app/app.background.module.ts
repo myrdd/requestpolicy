@@ -40,6 +40,7 @@ export class AppBackground extends Module {
     return {
       policy: this.policy,
       storage: this.storage,
+      ui: this.ui,
     };
   }
 }
