@@ -466,6 +466,11 @@ BUILDS.forEach((build) => {
             srcFiles: ["jquery.min.js"],
             destRoot: "",
           },
+          {
+            srcRoot: "punycode",
+            srcFiles: ["punycode.js"],
+            destRoot: "",
+          },
         ];
         let files = [];
         specs.forEach(({srcRoot, srcFiles, destRoot}) => {

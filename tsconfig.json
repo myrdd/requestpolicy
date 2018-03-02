@@ -34,6 +34,9 @@
     "outDir": "build/ts",
     "baseUrl": "src",
     "paths": {
+      "lib/third-party/punycode": [
+        "../node_modules/punycode/punycode.js",
+      ],
       "*": [
         "content/*",
         "conditional/legacy/content/*",
