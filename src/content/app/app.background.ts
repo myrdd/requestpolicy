@@ -20,14 +20,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
-import { InitialSetup } from "app/ui/initial-setup";
+import * as punycode from "lib/third-party/punycode";
 import { Log } from "models/log";
 import { AppBackground } from "./app.background.module";
 import { Policy } from "./policy/policy.module";
 import { RulesetStorage } from "./policy/ruleset-storage";
 import { Subscriptions } from "./policy/subscriptions";
+import { EffectiveTLDService } from "./services/effective-tld-service";
+import { RPServices } from "./services/services.module";
 import * as RPStorageConfig from "./storage/rp-config.background";
 import { Storage } from "./storage/storage.module";
+import { InitialSetup } from "./ui/initial-setup";
 import { Ui } from "./ui/ui.module";
 
 const log = Log.instance;
@@ -35,6 +38,11 @@ const log = Log.instance;
 const rulesetStorage = new RulesetStorage(log);
 const subscriptions = new Subscriptions(log, rulesetStorage);
 const policy = new Policy(log, subscriptions, rulesetStorage);
+
+// tslint:disable-next-line:no-var-requires
+const psl: any = require("data/psl.json");
+const eTLDService = new EffectiveTLDService(log, punycode, psl);
+const rpServices = new RPServices(log, eTLDService);
 
 const storage = new Storage(log, RPStorageConfig);
 
@@ -44,6 +52,7 @@ const ui = new Ui(log, initialSetup);
 export const rp = new AppBackground(
     log,
     policy,
+    rpServices,
     storage,
     ui,
 );
