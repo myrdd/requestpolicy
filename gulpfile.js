@@ -36,6 +36,7 @@ const promiseStat = pify(fs.stat);
 const rootDir = `${__dirname}`;
 const srcDirRelative = `src`;
 const srcDir = `${rootDir}/${srcDirRelative}`; // eslint-disable-line no-unused-vars
+const downloadsDir = `${rootDir}/build/common`;
 
 const EXTENSION_NAME        = "requestpolicy";
 const EXTENSION_ID__AMO     = "rpcontinued@amo.requestpolicy.org";
@@ -311,6 +312,31 @@ gulp.task("versionData:uniqueVersion", ["versionData:uniqueVersionSuffix"], () =
   return Promise.resolve();
 });
 
+// -----------------------------------------------------------------------------
+// downloads
+// -----------------------------------------------------------------------------
+
+gulp.task("downloads:psl", () => new Promise((resolve, reject) => {
+  exec(
+      `
+      mkdir -p ${downloadsDir}
+      cd ${downloadsDir}
+        curl -Os -z effective_tld_names.dat 'https://publicsuffix.org/list/effective_tld_names.dat'
+        echo '['$(
+          grep -Ev '^ *(//.*)?$' effective_tld_names.dat | tr '\n' ',' | sed 's/,/","/g'
+        )']' > psl.json
+      `,
+      (err, out) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        versionData.uniqueVersionSuffix = out.trim();
+        resolve();
+      }
+  );
+}));
+
 // =============================================================================
 // builds
 // =============================================================================
@@ -339,6 +365,7 @@ BUILDS.forEach((build) => {
     const buildDirRelative = `build/${extensionType}/${build.alias}`;
     const buildDir = `${rootDir}/${buildDirRelative}`;
     const thirdPartyBuildDir = `${buildDir}/content/lib/third-party`;
+    const downloadsBuildDir = `${buildDir}/content/data`;
 
     const TASK_NAMES = {
       ppContext: `buildData:${extensionType}:${build.alias}:preprocessContext`,
@@ -455,6 +482,15 @@ BUILDS.forEach((build) => {
         let stream = gulp.src(files, { base: srcDir }).
             pipe(rename(mergeInConditional)).
             pipe(gulp.dest(buildDir));
+        return stream;
+      });
+
+      addBuildTask("downloadedFiles", "downloads:psl", () => {
+        let files = [
+          "psl.json",
+        ].map((file) => `${downloadsDir}/${file}`);
+        let stream = gulp.src(files, { base: downloadsDir }).
+            pipe(gulp.dest(downloadsBuildDir));
         return stream;
       });
 
