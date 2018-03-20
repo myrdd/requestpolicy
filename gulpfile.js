@@ -322,9 +322,9 @@ gulp.task("downloads:psl", () => new Promise((resolve, reject) => {
       mkdir -p ${downloadsDir}
       cd ${downloadsDir}
         curl -Os -z effective_tld_names.dat 'https://publicsuffix.org/list/effective_tld_names.dat'
-        echo '['$(
+        echo '["'$(
           grep -Ev '^ *(//.*)?$' effective_tld_names.dat | tr '\n' ',' | sed 's/,/","/g'
-        )']' > psl.json
+        )'"]' | sed 's/,""//g' > psl.json
       `,
       (err, out) => {
         if (err) {
