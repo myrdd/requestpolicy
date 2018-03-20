@@ -209,7 +209,7 @@ export class EffectiveTLDService extends Module {
     }
     const parsed = this.parse(domain);
     if (!("domain" in parsed)) return null;
-    return parsed.domain || null;
+    return (parsed as IParsed).domain || null;
   }
 
   //
@@ -218,8 +218,8 @@ export class EffectiveTLDService extends Module {
   public isValid(domain: string): boolean {
     const parsed = this.parse(domain);
     return Boolean(
-        ("domain" in parsed) && parsed.domain &&
-        ("listed" in parsed) && parsed.listed,
+        (parsed as IParsed).domain &&
+        (parsed as IParsed).listed,
     );
   }
 
