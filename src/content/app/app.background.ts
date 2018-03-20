@@ -20,6 +20,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
+import { RulesServices } from "app/services/rules/rules-services.module";
+import { V0RulesService } from "app/services/rules/v0-rules-service";
 import * as punycode from "lib/third-party/punycode";
 import { Log } from "models/log";
 import { AppBackground } from "./app.background.module";
@@ -42,7 +44,9 @@ const policy = new Policy(log, subscriptions, rulesetStorage);
 // tslint:disable-next-line:no-var-requires
 const psl: any = require("data/psl.json");
 const eTLDService = new EffectiveTLDService(log, punycode, psl);
-const rpServices = new RPServices(log, eTLDService);
+const v0RulesService = new V0RulesService(log);
+const rulesServices = new RulesServices(log, v0RulesService);
+const rpServices = new RPServices(log, eTLDService, rulesServices);
 
 const storage = new Storage(log, RPStorageConfig);
 

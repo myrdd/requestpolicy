@@ -2,8 +2,7 @@
  * ***** BEGIN LICENSE BLOCK *****
  *
  * RequestPolicy - A Firefox extension for control over cross-site requests.
- * Copyright (c) 2011 Justin Samuel
- * Copyright (c) 2014 Martin Kimmerle
+ * Copyright (c) 2018 Martin Kimmerle
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -21,24 +20,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
-import { IEffectiveTLDService } from "app/services/effective-tld-service";
-import { RulesServices } from "app/services/rules/rules-services.module";
+import { V0RulesService } from "app/services/rules/v0-rules-service";
 import { Module } from "lib/classes/module";
 import { Log } from "models/log";
 
-export class RPServices extends Module {
+export class RulesServices extends Module {
   constructor(
       log: Log,
-      public readonly eTLD: IEffectiveTLDService,
-      public readonly rules: RulesServices,
+      public readonly v0: V0RulesService,
   ) {
-    super("app.services", log);
+    super("app.services.rules", log);
   }
 
   protected get subModules() {
     return {
-      eTLD: this.eTLD,
-      rules: this.rules,
+      v0: this.v0,
     };
   }
 }
